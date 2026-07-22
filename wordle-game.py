@@ -1,30 +1,47 @@
 import random as r
 
-#read the valid word file into a list
-with open("valid-words.csv", "r") as f:
-    validWords = f.read().splitlines()
+#return how many words are left after a guess is made
+def findWordsLeft(guessMade, targetWord, currentWordList):
 
-#read the word bank file into a list
-with open("word-bank.csv", "r") as fi:
-    targetWordPossiblities = fi.read().splitlines()
+    newWordList = currentWordList
 
-targetWord = r.choice(targetWordPossiblities)
+    wordColours = wordleWord(guessMade, targetWord)
 
-print(targetWord)
+    for i, colour in enumerate(wordColours):
 
-#wordle game logic
-guess = ""
-guesses = 0
-while guess != targetWord and guesses < 5:
+        letter = list(guessMade)[i]
 
-    #ask for valid input
-    guess = ""
-    while guess not in validWords:
+        print(colour, letter, i)
 
-        guess = input("What is your guess: ")
+        if colour == "grey":
+
+            newWordList = [
+                word for word in newWordList
+                if letter not in word
+            ]
+
+        elif colour == "green":
+
+            newWordList = [
+                word for word in newWordList
+                if word[i] == letter
+            ]
 
 
-    wordList = list(guess)
+        elif colour == "yellow":
+
+            newWordList = [
+                word for word in newWordList 
+                if word[i] != letter and letter in (word[:i] + word[i+1:])
+            ]
+
+    return newWordList
+
+
+#return a colour list based off the word input and the target word
+def wordleWord(word, targetWord):
+
+    wordList = list(word)
     targetWordList = list(targetWord)
 
     tempTargetWordList = list(targetWord)
@@ -45,7 +62,40 @@ while guess != targetWord and guesses < 5:
                 if letter == targetLetter:
 
                     tempTargetWordList[j] = None
+                    break
+
+    return letterColours
+
+#read the valid word file into a list
+with open("valid-words.csv", "r") as f:
+    validWords = f.read().splitlines()
+
+#read the word bank file into a list
+with open("word-bank.csv", "r") as fi:
+    targetWordPossiblities = fi.read().splitlines()
+
+targetWordChoice = "apply"
+
+print(targetWordChoice)
+
+#wordle game logic
+guess = ""
+guesses = 0
+wordsLeft = validWords
+while guess != targetWordChoice and guesses < 6:
+
+    #ask for valid input
+    guess = ""
+    while guess not in validWords:
+
+        guess = input("What is your guess: ")
+
+    outputColours = wordleWord(guess, targetWordChoice)
+
+    wordsLeft = findWordsLeft(guess, targetWordChoice, wordsLeft)
+
+    print(wordsLeft, len(wordsLeft))
 
     guesses += 1
 
-    print(letterColours)
+    print(outputColours)
