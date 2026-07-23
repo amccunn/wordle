@@ -30,11 +30,14 @@ def wordleWord(word, targetWord):
 
 
 if __name__ == "__main__":
+
     #read the valid word file into a list
+    #all possible inputs
     with open("valid-words.csv", "r") as f:
         validWords = f.read().splitlines()
 
     #read the word bank file into a list
+    #finds answer word
     with open("word-bank.csv", "r") as fi:
         targetWordPossiblities = fi.read().splitlines()
 

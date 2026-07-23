@@ -1,4 +1,5 @@
 import itertools
+import numpy as np
 from collections import defaultdict
 from WordleGame import wordleWord
 
@@ -46,21 +47,31 @@ def rankBestWords(wordsLeft):
 
     wordsDictionary = {}
 
+    length = len(wordsLeft)
+
     for word in wordsLeft:
 
-        counts = defaultdict(int)
+        probabilitiesOfPatterns = defaultdict(float)
 
         for secretWord in wordsLeft:
 
             colourCombo = tuple(wordleWord(word, secretWord))
 
-            counts[colourCombo] += 1
+            probabilitiesOfPatterns[colourCombo] += 1 / length
 
-        wordsDictionary[word] = dict(counts)
+        wordsDictionary[word] = dict(probabilitiesOfPatterns)
 
-    return wordsDictionary
+    wordsInDictionary = wordsDictionary.keys()
 
-#read the valid word file into a list
+    expectedInfo = {}
+
+    for word in wordsInDictionary:
+
+        expectedInfo[word] = sum(list(map(lambda x: float(x * np.log2(1/x)), wordsDictionary[word].values())))
+
+    return expectedInfo
+
+
 with open("valid-words.csv", "r") as f:
     validWords = f.read().splitlines()
 
