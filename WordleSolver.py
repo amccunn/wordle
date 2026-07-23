@@ -1,22 +1,51 @@
 import itertools
 import numpy as np
+import math  # MODIFIED: Imported builtin math for much faster scalar log operations
+import time as t
+from heapq import nlargest
 from collections import defaultdict
-from WordleGame import wordleWord
 
 colours = ['green', 'yellow', 'grey']
 
 possibleColourCombos = list(itertools.product(colours, repeat=5))
 
-#return how many words are left after a guess is made
+#return a colour list based off the word input and the target word
+def wordleWord(word, targetWord):
+
+    wordList = list(word)
+    targetWordList = list(targetWord)
+
+    tempTargetWordList = list(targetWord)
+    letterColours = ["grey"] * 5
+
+    for i, letter in enumerate(wordList):
+
+        if letter in tempTargetWordList:
+
+            letterColours[i] = "yellow"
+
+            if letter == tempTargetWordList[i]:
+
+                letterColours[i] = "green"
+
+            for j, targetLetter in enumerate(tempTargetWordList):
+
+                if letter == targetLetter:
+
+                    tempTargetWordList[j] = None
+                    break
+
+    return letterColours
+
+
+# return how many words are left after a guess is made
 def findWordsLeft(guessMade, wordColours, currentWordList):
 
     newWordList = currentWordList
 
     for i, colour in enumerate(wordColours):
 
-        letter = list(guessMade)[i]
-
-        print(colour, letter, i)
+        letter = guessMade[i]  # MODIFIED: Removed list(guessMade)[i]; strings are already indexable
 
         if colour == "grey":
 
@@ -32,48 +61,63 @@ def findWordsLeft(guessMade, wordColours, currentWordList):
                 if word[i] == letter
             ]
 
-
         elif colour == "yellow":
 
+            # MODIFIED: Simplified (word[:i] + word[i+1:]) string creation to `letter in word`
+            # Since word[i] != letter is already checked, checking `letter in word` is logically identical and avoids string concatenation
             newWordList = [
                 word for word in newWordList 
-                if word[i] != letter and letter in (word[:i] + word[i+1:])
+                if word[i] != letter and letter in word
             ]
 
     return newWordList
 
 
-def rankBestWords(wordsLeft):
+def rankBestWords(wordsLeft, N):
+
+    startTime = t.time()
 
     wordsDictionary = {}
 
-    length = len(wordsLeft)
+    length = max(len(wordsLeft),1)
+    inv_length = 1.0 / length  # MODIFIED: Precomputed 1 / length to avoid repeated floating-point division
 
     for word in wordsLeft:
 
-        probabilitiesOfPatterns = defaultdict(float)
+        # MODIFIED: Count pattern occurrences using fast integer arithmetic instead of adding floats in the hot loop
+        counts = defaultdict(int)
 
         for secretWord in wordsLeft:
 
             colourCombo = tuple(wordleWord(word, secretWord))
 
-            probabilitiesOfPatterns[colourCombo] += 1 / length
+            counts[colourCombo] += 1
 
-        wordsDictionary[word] = dict(probabilitiesOfPatterns)
+        # MODIFIED: Normalize integer counts to probabilities once per unique pattern at the end
+        wordsDictionary[word] = {combo: count * inv_length for combo, count in counts.items()}
 
-    wordsInDictionary = wordsDictionary.keys()
-
+    # finds the expected info of each word by summing its possible colour combos
     expectedInfo = {}
+    
+    # MODIFIED: Replaced np.log2 with math.log2 and map/lambda with a generator expression.
+    # Calling NumPy functions on individual scalar floats adds huge overhead compared to C-native math functions.
+    for word, probs in wordsDictionary.items():
+        expectedInfo[word] = sum(p * math.log2(1.0 / p) for p in probs.values())
 
-    for word in wordsInDictionary:
+    # returns the top N words and their expected info
+    top_n = nlargest(N, expectedInfo.items(), key=lambda item: item[1])
 
-        expectedInfo[word] = sum(list(map(lambda x: float(x * np.log2(1/x)), wordsDictionary[word].values())))
+    finishTime = t.time()
 
-    return expectedInfo
+    elapsedTime = finishTime - startTime
 
+    print(f"Execution took {elapsedTime} seconds")
 
-with open("valid-words.csv", "r") as f:
-    validWords = f.read().splitlines()
+    return top_n
 
-print(f"{rankBestWords(validWords)}")
+if __name__ == "__name__":
 
+    with open("valid-words.csv", "r") as f:
+        validWords = f.read().splitlines()
+
+    print(f"{rankBestWords(validWords, 10)}")

@@ -1,32 +1,6 @@
 import random as r
+from WordleSolver import rankBestWords, findWordsLeft, wordleWord
 
-#return a colour list based off the word input and the target word
-def wordleWord(word, targetWord):
-
-    wordList = list(word)
-    targetWordList = list(targetWord)
-
-    tempTargetWordList = list(targetWord)
-    letterColours = ["grey"] * 5
-
-    for i, letter in enumerate(wordList):
-
-        if letter in tempTargetWordList:
-
-            letterColours[i] = "yellow"
-
-            if letter == tempTargetWordList[i]:
-
-                letterColours[i] = "green"
-
-            for j, targetLetter in enumerate(tempTargetWordList):
-
-                if letter == targetLetter:
-
-                    tempTargetWordList[j] = None
-                    break
-
-    return letterColours
 
 
 if __name__ == "__main__":
@@ -41,7 +15,7 @@ if __name__ == "__main__":
     with open("word-bank.csv", "r") as fi:
         targetWordPossiblities = fi.read().splitlines()
 
-    targetWordChoice = "apply"
+    targetWordChoice = r.choice(targetWordPossiblities)
 
     print(targetWordChoice)
 
@@ -50,6 +24,8 @@ if __name__ == "__main__":
     guesses = 0
     wordsLeft = validWords
     while guess != targetWordChoice and guesses < 6:
+
+        print(f"{rankBestWords(wordsLeft, 10)}")
 
         #ask for valid input
         guess = ""
@@ -62,3 +38,5 @@ if __name__ == "__main__":
         guesses += 1
 
         print(outputColours)
+
+        wordsLeft = findWordsLeft(guess, outputColours, wordsLeft)
