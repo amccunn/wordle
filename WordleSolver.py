@@ -2,6 +2,8 @@ import itertools
 import numpy as np
 import math
 import time as t
+import os
+import json
 from heapq import nlargest
 from collections import defaultdict
 
@@ -67,6 +69,25 @@ def findWordsLeft(guessMade, wordColours, currentWordList):
             ]
 
     return newWordList
+
+def getBestWords(wordsLeft, N, fullWordList, cache_file="first_guess_scores.json"):
+
+    # Check if this is the first turn (all words are still available)
+    if len(wordsLeft) == len(fullWordList):
+
+        if os.path.exists(cache_file):
+
+            with open(cache_file, "r") as f:
+                cached_data = json.load(f)
+            
+            # Return top N from cached dictionary
+            return nlargest(N, cached_data.items(), key=lambda item: item[1])
+        
+        else:
+            print("Cache file not found, running full evaluation...")
+
+    # For turn 2 onwards (or if cache doesn't exist), run the original function
+    return rankBestWords(wordsLeft, N)
 
 
 def rankBestWords(wordsLeft, N):

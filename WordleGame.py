@@ -1,7 +1,5 @@
 import random as r
-from WordleSolver import rankBestWords, findWordsLeft, wordleWord
-
-
+from WordleSolver import getBestWords, findWordsLeft, wordleWord
 
 if __name__ == "__main__":
 
@@ -25,7 +23,7 @@ if __name__ == "__main__":
     wordsLeft = validWords
     while guess != targetWordChoice and guesses < 6:
 
-        print(f"{rankBestWords(wordsLeft, 10)}")
+        print(f"{getBestWords(wordsLeft, 10, validWords)}")
 
         #ask for valid input
         guess = ""
