@@ -1,6 +1,6 @@
 import itertools
 import numpy as np
-import math  # MODIFIED: Imported builtin math for much faster scalar log operations
+import math
 import time as t
 from heapq import nlargest
 from collections import defaultdict
@@ -9,34 +9,30 @@ colours = ['green', 'yellow', 'grey']
 
 possibleColourCombos = list(itertools.product(colours, repeat=5))
 
-#return a colour list based off the word input and the target word
 def wordleWord(word, targetWord):
-
     wordList = list(word)
     targetWordList = list(targetWord)
-
-    tempTargetWordList = list(targetWord)
     letterColours = ["grey"] * 5
 
-    for i, letter in enumerate(wordList):
+    # Pass 1: Check for exact matches (Green)
+    for i in range(5):
+        if wordList[i] == targetWordList[i]:
+            letterColours[i] = "green"
+            targetWordList[i] = None  # Consume this letter from target
 
-        if letter in tempTargetWordList:
+    # Pass 2: Check for partial matches (Yellow)
+    for i in range(5):
+        # Skip letters already marked green
+        if letterColours[i] == "green":
+            continue
 
+        letter = wordList[i]
+        if letter in targetWordList:
             letterColours[i] = "yellow"
-
-            if letter == tempTargetWordList[i]:
-
-                letterColours[i] = "green"
-
-            for j, targetLetter in enumerate(tempTargetWordList):
-
-                if letter == targetLetter:
-
-                    tempTargetWordList[j] = None
-                    break
+            # Consume the first matching instance in target
+            targetWordList[targetWordList.index(letter)] = None
 
     return letterColours
-
 
 # return how many words are left after a guess is made
 def findWordsLeft(guessMade, wordColours, currentWordList):
@@ -80,11 +76,10 @@ def rankBestWords(wordsLeft, N):
     wordsDictionary = {}
 
     length = max(len(wordsLeft),1)
-    inv_length = 1.0 / length  # MODIFIED: Precomputed 1 / length to avoid repeated floating-point division
+    inv_length = 1.0 / length
 
     for word in wordsLeft:
 
-        # MODIFIED: Count pattern occurrences using fast integer arithmetic instead of adding floats in the hot loop
         counts = defaultdict(int)
 
         for secretWord in wordsLeft:
@@ -93,14 +88,11 @@ def rankBestWords(wordsLeft, N):
 
             counts[colourCombo] += 1
 
-        # MODIFIED: Normalize integer counts to probabilities once per unique pattern at the end
         wordsDictionary[word] = {combo: count * inv_length for combo, count in counts.items()}
 
     # finds the expected info of each word by summing its possible colour combos
     expectedInfo = {}
     
-    # MODIFIED: Replaced np.log2 with math.log2 and map/lambda with a generator expression.
-    # Calling NumPy functions on individual scalar floats adds huge overhead compared to C-native math functions.
     for word, probs in wordsDictionary.items():
         expectedInfo[word] = sum(p * math.log2(1.0 / p) for p in probs.values())
 
