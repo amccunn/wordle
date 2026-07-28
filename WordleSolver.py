@@ -71,7 +71,7 @@ def findWordsLeft(guessMade, wordColours, currentWordList):
     return newWordList
 
 def getBestWords(wordsLeft, N, fullWordList, cache_file="first_guess_scores.json"):
-
+    
     # Check if this is the first turn (all words are still available)
     if len(wordsLeft) == len(fullWordList):
 
