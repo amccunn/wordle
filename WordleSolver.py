@@ -134,3 +134,5 @@ if __name__ == "__name__":
         validWords = f.read().splitlines()
 
     print(f"{rankBestWords(validWords, 10)}")
+
+
