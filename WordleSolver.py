@@ -41,32 +41,10 @@ def findWordsLeft(guessMade, wordColours, currentWordList):
 
     newWordList = currentWordList
 
-    for i, colour in enumerate(wordColours):
-
-        letter = guessMade[i]  # MODIFIED: Removed list(guessMade)[i]; strings are already indexable
-
-        if colour == "grey":
-
-            newWordList = [
-                word for word in newWordList
-                if letter not in word
-            ]
-
-        elif colour == "green":
-
-            newWordList = [
-                word for word in newWordList
-                if word[i] == letter
-            ]
-
-        elif colour == "yellow":
-
-            # MODIFIED: Simplified (word[:i] + word[i+1:]) string creation to `letter in word`
-            # Since word[i] != letter is already checked, checking `letter in word` is logically identical and avoids string concatenation
-            newWordList = [
-                word for word in newWordList 
-                if word[i] != letter and letter in word
-            ]
+    newWordList = [
+        candidate for candidate in currentWordList
+        if wordleWord(guessMade, candidate) == wordColours
+    ]
 
     return newWordList
 
@@ -128,7 +106,7 @@ def rankBestWords(wordsLeft, N):
 
     return top_n
 
-if __name__ == "__name__":
+if __name__ == "__main__":
 
     with open("valid-words.csv", "r") as f:
         validWords = f.read().splitlines()
