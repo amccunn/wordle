@@ -39,11 +39,11 @@ def wordleWord(word, targetWord):
 # return how many words are left after a guess is made
 def findWordsLeft(guessMade, wordColours, currentWordList):
 
-    newWordList = currentWordList
+    target_colours = list(wordColours)
 
     newWordList = [
         candidate for candidate in currentWordList
-        if wordleWord(guessMade, candidate) == wordColours
+        if wordleWord(guessMade, candidate) == target_colours
     ]
 
     return newWordList

@@ -7,14 +7,10 @@ from WordleSolver import getBestWords, findWordsLeft, wordleWord
 with open("valid-words.csv", "r") as f:
     validWords = f.read().splitlines()
 
-currentWordsList = validWords
-
 #read the word bank file into a list
 #finds answer word
 with open("word-bank.csv", "r") as fi:
     targetWordPossiblities = fi.read().splitlines()
-
-targetWordChoice = r.choice(targetWordPossiblities)
 
 #result = true means win false means lose
 def endGame(result):
@@ -38,10 +34,12 @@ def endGame(result):
 
 
 #default target word is random, but can be changed to any word in the word bank
-def playWordle(targetWord = targetWordChoice):
+def playWordle(targetWord = r.choice(targetWordPossiblities)):
 
     letterIndex = 0
     guessNum = 0
+
+    currentWordsList = validWords
 
     def submitWord(word):
 
