@@ -25,7 +25,7 @@ COLORS = {
     "tile_border": "#c9ccd1",
     "green": "#6aaa64",
     "yellow": "#c9b458",
-    "gray": "#787c7e",
+    "grey": "#787c7e",
     "primary": "#0f172a",
     "button": "#1d4ed8",
     "button_text": "#ffffff",
@@ -52,7 +52,7 @@ def style_button(button):
 
 
 # result = true means win false means lose
-def endGame(result):
+def endGame(result, root=None, targetWord=None):
     if result:
         title = "YOU WIN"
         message = "Well done! You cracked the word."
@@ -60,16 +60,28 @@ def endGame(result):
         title = "YOU LOSE"
         message = "Better luck next time!"
 
+    if targetWord:
+        answer_text = f"The word was: {targetWord.upper()}"
+    else:
+        answer_text = ""
+
     winWindow = tk.Toplevel()
     winWindow.title(title)
     winWindow.configure(bg=COLORS["bg"])
-    winWindow.geometry("360x220")
+    winWindow.geometry("560x320")
     winWindow.resizable(False, False)
+    winWindow.grab_set()
+    winWindow.focus_set()
+
+    def close_result_screen():
+        winWindow.destroy()
+        if root is not None:
+            root.destroy()
 
     titleLabel = tk.Label(
         winWindow,
         text=title,
-        font=("Segoe UI", 28, "bold"),
+        font=("Segoe UI", 32, "bold"),
         bg=COLORS["bg"],
         fg=COLORS["primary"],
         pady=20,
@@ -78,17 +90,20 @@ def endGame(result):
 
     messageLabel = tk.Label(
         winWindow,
-        text=message,
-        font=("Segoe UI", 14),
+        text=f"{message}\n{answer_text}",
+        font=("Segoe UI", 16),
         bg=COLORS["bg"],
         fg=COLORS["fg"],
+        wraplength=500,
+        justify="center",
+        pady=10,
     )
-    messageLabel.pack(pady=(0, 18))
+    messageLabel.pack(pady=(0, 16))
 
     playAgainButton = tk.Button(
         winWindow,
         text="Play Again",
-        command=winWindow.destroy,
+        command=close_result_screen,
         bg=COLORS["button"],
         fg=COLORS["button_text"],
         activebackground="#1e40af",
@@ -96,13 +111,14 @@ def endGame(result):
         relief="flat",
         bd=0,
         font=BUTTON_FONT,
-        padx=20,
-        pady=10,
+        padx=30,
+        pady=14,
+        width=18,
     )
     playAgainButton.pack()
 
-    winWindow.grab_set()
-    winWindow.focus_set()
+    winWindow.protocol("WM_DELETE_WINDOW", close_result_screen)
+    winWindow.after(3000, close_result_screen)
 
 
 # default target word is random, but can be changed to any word in the word bank
@@ -160,7 +176,7 @@ def playWordle(targetWord=targetWordChoice):
 
                 for i in range(5):
                     colourLetterLabel = tk.Label(
-                        root,
+                        board_frame,
                         text=list(word)[i].upper(),
                         font=("Segoe UI", 28, "bold"),
                         bg=COLORS[colourList[i]],
@@ -177,31 +193,74 @@ def playWordle(targetWord=targetWordChoice):
                     letterArray[i].grid(row=guessNum + 3, column=i, padx=4, pady=4)
 
                 if colourList == ["green"] * 5:
-                    endGame(True)
-                    root.destroy()
+                    endGame(True, root, targetWord)
                 elif guessNum == 6:
-                    endGame(False)
-                    root.destroy()
+                    endGame(False, root, targetWord)
 
     root = tk.Tk()
     root.bind("<Key>", keyPressed)
     root.title("Wordle")
     root.configure(bg=COLORS["bg"])
-    root.geometry("420x620")
+    root.geometry("1280x820")
     root.resizable(False, False)
 
+    main_container = tk.Frame(root, bg=COLORS["bg"])
+    main_container.pack(expand=True, padx=30, pady=20)
+
+    side_panel = tk.Frame(main_container, bg=COLORS["panel"], bd=1, relief="solid", padx=18, pady=16)
+    side_panel.grid(row=0, column=0, padx=(0, 40), sticky="n")
+
+    side_title = tk.Label(
+        side_panel,
+        text="Best guesses",
+        font=("Segoe UI", 16, "bold"),
+        bg=COLORS["panel"],
+        fg=COLORS["primary"],
+    )
+    side_title.pack(anchor="w", pady=(0, 8))
+
+    best_guess_text = tk.Text(
+        side_panel,
+        width=22,
+        height=18,
+        bg=COLORS["panel"],
+        fg=COLORS["fg"],
+        font=("Segoe UI", 11),
+        relief="flat",
+        wrap="word",
+    )
+    best_guess_text.pack()
+    best_guess_text.insert("end", "Click the button to see the top candidate words.\n")
+    best_guess_text.configure(state="disabled")
+
+    def updateBestGuesses():
+        best_words = getBestWords(currentWordsList, 10, validWords)
+        best_guess_text.configure(state="normal")
+        best_guess_text.delete("1.0", "end")
+
+        if not best_words:
+            best_guess_text.insert("end", "No suggestions available.")
+        else:
+            for index, (word, score) in enumerate(best_words, start=1):
+                best_guess_text.insert("end", f"{index}. {word.upper()}   {score:.3f}\n")
+
+        best_guess_text.configure(state="disabled")
+
+    board_frame = tk.Frame(main_container, bg=COLORS["bg"])
+    board_frame.grid(row=0, column=1, padx=(0, 20))
+
     titleLabel = tk.Label(
-        root,
+        board_frame,
         text="WORDLE",
-        font=("Segoe UI", 32, "bold"),
+        font=("Segoe UI", 38, "bold"),
         bg=COLORS["bg"],
         fg=COLORS["primary"],
-        pady=18,
+        pady=24,
     )
     titleLabel.grid(row=0, column=0, columnspan=5, sticky="ew")
 
     statusLabel = tk.Label(
-        root,
+        board_frame,
         text="",
         font=("Segoe UI", 11, "bold"),
         bg=COLORS["bg"],
@@ -211,19 +270,21 @@ def playWordle(targetWord=targetWordChoice):
     statusLabel.grid(row=1, column=0, columnspan=5, sticky="ew")
 
     suggestionButton = tk.Button(
-        root,
+        board_frame,
         text="Best guesses",
-        command=lambda: print(getBestWords(currentWordsList, 10, validWords)),
+        command=updateBestGuesses,
+        width=18,
+        height=2,
     )
     style_button(suggestionButton)
-    suggestionButton.grid(row=2, column=0, columnspan=5, sticky="ew", padx=18, pady=(0, 10))
+    suggestionButton.grid(row=2, column=0, columnspan=5, sticky="ew", padx=18, pady=(0, 18))
 
     letterArray = []
     for i in range(5):
         blankLetter = tk.Label(
-            root,
+            board_frame,
             text="_",
-            font=LABEL_FONT,
+            font=("Segoe UI", 34, "bold"),
             bg=COLORS["tile"],
             fg=COLORS["fg"],
             width=3,
@@ -231,10 +292,10 @@ def playWordle(targetWord=targetWordChoice):
             bd=0,
             relief="solid",
             borderwidth=2,
-            padx=10,
-            pady=8,
+            padx=12,
+            pady=12,
         )
-        blankLetter.grid(row=3, column=i, padx=4, pady=4)
+        blankLetter.grid(row=3, column=i, padx=6, pady=6)
         letterArray.append(blankLetter)
 
     root.mainloop()
