@@ -14,8 +14,8 @@ currentWordsList = validWords
 with open("word-bank.csv", "r") as fi:
     targetWordPossiblities = fi.read().splitlines()
 
-targetWordChoice = r.choice(targetWordPossiblities)
 
+#colours for the formatting of the game
 COLORS = {
     "bg": "#f4f4f4",
     "panel": "#ffffff",
@@ -53,6 +53,7 @@ def style_button(button):
 
 # result = true means win false means lose
 def endGame(result, root=None, targetWord=None):
+
     if result:
         title = "YOU WIN"
         message = "Well done! You cracked the word."
@@ -118,17 +119,16 @@ def endGame(result, root=None, targetWord=None):
     playAgainButton.pack()
 
     winWindow.protocol("WM_DELETE_WINDOW", close_result_screen)
-    winWindow.after(3000, close_result_screen)
+    winWindow.after(6000, close_result_screen)
 
 
 # default target word is random, but can be changed to any word in the word bank
-def playWordle(targetWord=targetWordChoice):
+def playWordle(targetWord=r.choice(targetWordPossiblities)):
     letterIndex = 0
     guessNum = 0
 
-    currentWordsList = validWords
-
     def submitWord(word):
+
         if word in validWords:
             return wordleWord(word, targetWord)
 
@@ -172,6 +172,8 @@ def playWordle(targetWord=targetWordChoice):
             if submitWord(word) == "Invalid":
                 statusLabel.config(text="Not in word list")
             else:
+                best_guess_text.configure(state="normal")
+                best_guess_text.delete("1.0", "end") 
                 guessNum += 1
                 colourList = submitWord(word)
                 currentWordsList = findWordsLeft(word, colourList, currentWordsList)
