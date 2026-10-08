@@ -74,6 +74,7 @@ def endGame(result, root=None, targetWord=None):
     winWindow.grab_set()
     winWindow.focus_set()
 
+    # Close the result screen and the main window if it exists
     def close_result_screen():
         winWindow.destroy()
         if root is not None:

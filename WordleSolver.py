@@ -11,6 +11,9 @@ colours = ['green', 'yellow', 'grey']
 
 possibleColourCombos = list(itertools.product(colours, repeat=5))
 
+with open("valid-words.csv", "r") as f:
+    validWords = f.read().splitlines()
+
 def wordleWord(word, targetWord):
     wordList = list(word)
     targetWordList = list(targetWord)
@@ -48,7 +51,7 @@ def findWordsLeft(guessMade, wordColours, currentWordList):
 
     return newWordList
 
-def getBestWords(wordsLeft, N, fullWordList, cache_file="first_guess_scores.json"):
+def getBestWords(wordsLeft, N, fullWordList=validWords, cache_file="first_guess_scores.json"):
     
     # Check if this is the first turn (all words are still available)
     if len(wordsLeft) == len(fullWordList):
@@ -107,9 +110,6 @@ def rankBestWords(wordsLeft, N):
     return top_n
 
 if __name__ == "__main__":
-
-    with open("valid-words.csv", "r") as f:
-        validWords = f.read().splitlines()
 
     print(f"{rankBestWords(validWords, 10)}")
 
