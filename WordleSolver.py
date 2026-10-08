@@ -111,6 +111,6 @@ def rankBestWords(wordsLeft, N):
 
 if __name__ == "__main__":
 
-    print(f"{rankBestWords(validWords, 10)}")
+    print(f"{rankBestWords(VALID_WORDS, 10)}")
 
 

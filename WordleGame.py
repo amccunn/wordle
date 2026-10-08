@@ -1,6 +1,7 @@
 import random as r
 import tkinter as tk
 from WordleSolver import getBestWords, findWordsLeft, wordleWord, VALID_WORDS
+from AutoPlayer import load_wordle
 
 #copy the valid words list to a new variable to keep track of the current words left
 currentWordsList = VALID_WORDS.copy()
@@ -350,7 +351,7 @@ def createMenu():
     root = tk.Tk()
     root.title("Main Menu")
     root.configure(bg=COLORS["bg"])
-    root.geometry("380x260")
+    root.geometry("600x400")
     root.resizable(False, False)
 
     title = tk.Label(
@@ -371,7 +372,17 @@ def createMenu():
     style_button(customWordWordleButton)
     customWordWordleButton.pack(fill="x", padx=30, pady=(0, 10))
 
+    playOnlineButton = tk.Button(root, text="Play Online Wordle", command=lambda: (root.destroy(), load_wordle()))
+    style_button(playOnlineButton)
+    playOnlineButton.pack(fill="x", padx=30, pady=(0, 10))
+
+    playOnlineAutoButton = tk.Button(root, text="Play Online Wordle (Auto)", command=lambda: (root.destroy(), load_wordle(autoPlay=True)))
+    style_button(playOnlineAutoButton)
+    playOnlineAutoButton.pack(fill="x", padx=30, pady=(0, 10))
+
     root.mainloop()
+
+
 
 
 if __name__ == "__main__":
