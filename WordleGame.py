@@ -1,13 +1,9 @@
 import random as r
 import tkinter as tk
-from WordleSolver import getBestWords, findWordsLeft, wordleWord
+from WordleSolver import getBestWords, findWordsLeft, wordleWord, VALID_WORDS
 
-# read the valid word file into a list
-# all possible inputs
-with open("valid-words.csv", "r") as f:
-    validWords = f.read().splitlines()
-
-currentWordsList = validWords
+#copy the valid words list to a new variable to keep track of the current words left
+currentWordsList = VALID_WORDS.copy()
 
 # read the word bank file into a list
 # finds answer word
@@ -130,7 +126,7 @@ def playWordle(targetWord=r.choice(targetWordPossiblities)):
 
     def submitWord(word):
 
-        if word in validWords:
+        if word in VALID_WORDS:
             return wordleWord(word, targetWord)
 
         return "Invalid"
@@ -239,7 +235,7 @@ def playWordle(targetWord=r.choice(targetWordPossiblities)):
     best_guess_text.configure(state="disabled")
 
     def updateBestGuesses():
-        best_words = getBestWords(currentWordsList, 10, validWords)
+        best_words = getBestWords(currentWordsList, 10, currentWordsList)
         best_guess_text.configure(state="normal")
         best_guess_text.delete("1.0", "end")
 

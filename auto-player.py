@@ -1,7 +1,9 @@
 import time as t
 from playwright.sync_api import sync_playwright
-from WordleSolver import rankBestWords
+from WordleSolver import getBestWords, VALID_WORDS
 
+#initialise current words ready to be edited 
+currentWordsList = VALID_WORDS.copy() 
 
 def load_wordle():
 
@@ -79,6 +81,8 @@ def load_wordle():
                 t.sleep(0.5)  # wait a bit before checking again
 
             print(f"Guess #{attempt + 1} processed: {row_data}")
+
+            getBestWords()
 
 
 
