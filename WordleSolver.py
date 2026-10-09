@@ -6,6 +6,7 @@ import os
 import json
 from heapq import nlargest
 from collections import defaultdict
+from wordfreq import zipf_frequency
 
 colours = ['green', 'yellow', 'grey']
 
@@ -13,6 +14,8 @@ possibleColourCombos = list(itertools.product(colours, repeat=5))
 
 with open("valid-words.csv", "r") as f:
     VALID_WORDS = f.read().splitlines()
+
+wordFrequencies = {word: zipf_frequency(word, 'en') for word in VALID_WORDS}
 
 def wordleWord(word, targetWord):
     wordList = list(word)

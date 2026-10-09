@@ -79,7 +79,7 @@ def load_wordle(autoPlay=False):
 
             # Check win condition
             if all(tile["state"] == "correct" for tile in row_data):
-                print("🎉 Congratulations! Word guessed correctly!")
+                print("Congratulations! Word guessed correctly!")
                 break
 
             # 4. FILTER DICTIONARY for next attempt
