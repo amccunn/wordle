@@ -4,6 +4,7 @@ import math
 import time as t
 import os
 import json
+import random as r
 from heapq import nlargest
 from collections import defaultdict
 from wordfreq import zipf_frequency
@@ -15,8 +16,19 @@ possibleColourCombos = list(itertools.product(colours, repeat=5))
 with open("valid-words.csv", "r") as f:
     VALID_WORDS = f.read().splitlines()
 
-wordFrequencies = {word: zipf_frequency(word, 'en') for word in VALID_WORDS}
+#sigmoid function to squish the word frequencies into a range of 0-1
+def sigmoidShifted(x, shift=2.0, stretch=3.0):
+    return 1 / (1 + np.exp(-stretch * (x - shift)))
 
+#finds the frequency of each word in the English language using the wordfreq library
+#squishes the frequencies into a range of 0-1 to make them easier to work with
+wordFrequencies = {word: sigmoidShifted(zipf_frequency(word, 'en')) for word in VALID_WORDS}
+
+#test word list for testing is a subset of VALID_WORDS of 100 randomly selected words
+#evenly spaced by word frequency to ensure a good distribution of common and uncommon words
+TEST_WORDS = r.sample(VALID_WORDS, 1000)
+
+#use input word and target word to return a list of colours
 def wordleWord(word, targetWord):
     wordList = list(word)
     targetWordList = list(targetWord)
@@ -93,9 +105,13 @@ def rankBestWords(wordsLeft, N):
 
             counts[colourCombo] += 1
 
+        #accounts for the frequency of each word in the info calc
+        map(lambda x: wordFrequencies[x], counts.keys())
+
         wordsDictionary[word] = {combo: count * inv_length for combo, count in counts.items()}
 
-    # finds the expected info of each word by summing its possible colour combos
+    #finds the expected info of each word by summing its possible colour combos
+    #probabilities multiplied by the log2 of the inverse of that probability
     expectedInfo = {}
     
     for word, probs in wordsDictionary.items():
