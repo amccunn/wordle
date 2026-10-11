@@ -3,13 +3,12 @@ import tkinter as tk
 from WordleSolver import getBestWords, findWordsLeft, wordleWord, VALID_WORDS
 from AutoPlayer import load_wordle
 
-#copy the valid words list to a new variable to keep track of the current words left
-currentWordsList = VALID_WORDS.copy()
-
 # read the word bank file into a list
 # finds answer word
 with open("word-bank.csv", "r") as fi:
     targetWordPossiblities = fi.read().splitlines()
+
+currentWordsList = VALID_WORDS.copy()
 
 
 #colours for the formatting of the game
@@ -122,6 +121,11 @@ def endGame(result, root=None, targetWord=None):
 
 # default target word is random, but can be changed to any word in the word bank
 def playWordle(targetWord=r.choice(targetWordPossiblities)):
+
+    global currentWordsList
+
+    currentWordsList = VALID_WORDS.copy()
+
     letterIndex = 0
     guessNum = 0
 
@@ -147,10 +151,11 @@ def playWordle(targetWord=r.choice(targetWordPossiblities)):
         )
 
     def keyPressed(event):
+
+        global currentWordsList
         nonlocal letterIndex
         nonlocal letterArray
         nonlocal guessNum
-        global currentWordsList
 
         if event.char and event.char.isprintable() and letterIndex < 5:
             letterArray[letterIndex].config(text=event.char.upper())
@@ -175,6 +180,7 @@ def playWordle(targetWord=r.choice(targetWordPossiblities)):
                 guessNum += 1
                 colourList = submitWord(word)
                 currentWordsList = findWordsLeft(word, colourList, currentWordsList)
+                print(f"Words left: {len(currentWordsList)}, curentwordslist updated successfully")
 
                 for i in range(5):
                     colourLetterLabel = tk.Label(
@@ -236,9 +242,10 @@ def playWordle(targetWord=r.choice(targetWordPossiblities)):
     best_guess_text.configure(state="disabled")
 
     def updateBestGuesses():
-        best_words = getBestWords(currentWordsList, 10, currentWordsList)
+        best_words = getBestWords(currentWordsList, 10)
         best_guess_text.configure(state="normal")
         best_guess_text.delete("1.0", "end")
+        print(f"Updating best guesses. Words left: {len(currentWordsList)}")
 
         if not best_words:
             best_guess_text.insert("end", "No suggestions available.")
@@ -325,7 +332,7 @@ def selectCustomWord():
 
     def submitWord():
         chosenWord = wordEntry.get().lower()
-        if chosenWord in validWords:
+        if chosenWord in VALID_WORDS:
             root.destroy()
             playWordle(chosenWord)
         else:
