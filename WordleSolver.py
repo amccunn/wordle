@@ -88,7 +88,7 @@ def getBestWords(wordsLeft=VALID_WORDS, N=5, fullWordList=VALID_WORDS, cache_fil
 
 def rankBestWords(wordsLeft, N):
 
-    startTime = t.time()
+    #startTime = t.time()
 
     wordsDictionary = {}
 
@@ -120,11 +120,11 @@ def rankBestWords(wordsLeft, N):
     # returns the top N words and their expected info
     top_n = nlargest(N, expectedInfo.items(), key=lambda item: item[1])
 
-    finishTime = t.time()
+    #finishTime = t.time()
 
-    elapsedTime = finishTime - startTime
+    #elapsedTime = finishTime - startTime
 
-    print(f"Time elapsed: {elapsedTime:.2f} seconds")
+    #print(f"Time elapsed: {elapsedTime:.2f} seconds")
 
     return top_n
 

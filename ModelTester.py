@@ -5,35 +5,58 @@ with open("word-bank.csv", "r") as fi:
 
 wordAvgGuesses = 0
 
-for targetWord in targetWordPossibilities:
+topTenWords = getBestWords(wordsLeft=VALID_WORDS, N=10)
+topTenWordsDict = {}
 
-    nextGuess = getBestWords(wordsLeft=VALID_WORDS, N=1)[0][0]
+#test the top 10 best first guesses
+for word in topTenWords:
 
-    wordsLeft = targetWordPossibilities.copy()
+    #test algorithm against all the possible target words
+    for targetWord in targetWordPossibilities:
 
-    for i in range(6):
+        nextGuess = word[0]
 
-        #simulate the guess and get the colours for each letter
-        wordColourList = wordleWord(nextGuess, targetWord)
+        wordsLeft = targetWordPossibilities.copy()
 
-        if wordColourList == ["green"] * 5:
-            guesses = i + 1
-            break
+        for i in range(6):
 
-        #find the words left after the guess is made
-        wordsLeft = findWordsLeft(nextGuess, wordColourList, wordsLeft)
+            #simulate the guess and get the colours for each letter
+            wordColourList = wordleWord(nextGuess, targetWord)
 
-        #calculate the next best guess based on the words left
-        nextGuess = getBestWords(wordsLeft=wordsLeft, N=1)[0][0]
+            if wordColourList == ["green"] * 5:
+                guesses = i + 1
+                break
 
-    else:
-        guesses = 6
+            #find the words left after the guess is made
+            wordsLeft = findWordsLeft(nextGuess, wordColourList, wordsLeft)
 
-    wordAvgGuesses += guesses
+            #calculate the next best guess based on the words left
+            nextGuess = getBestWords(wordsLeft=wordsLeft, N=1)[0][0]
 
-wordAvgGuesses /= len(targetWordPossibilities)
-print(f"Average guesses for algorithm: {wordAvgGuesses}")
+        else:
+            guesses = 6
 
-#average for botWithWordFreqHeuristic: 3.576
+        wordAvgGuesses += guesses
+
+    wordAvgGuesses /= len(targetWordPossibilities)
+    topTenWordsDict[word[0]] = wordAvgGuesses
+
+print("\nTop 10 first guesses and their average guesses:")
+for word, avg in sorted(topTenWordsDict.items(), key=lambda x: x[1]):
+    print(f"{word}: {avg:.3f}")
+
+#average for botWithWordFreqHeuristic: 3.576 - tares first guess since it has the best score
+# Top 10 first guesses and their average guesses:
+# tales: 3.552
+# tears: 3.568
+# teras: 3.573
+# tares: 3.576
+# rates: 3.591
+# nares: 3.598
+# rales: 3.599
+# lares: 3.605
+# soare: 3.613
+# reais: 3.618
+#tales is therefore the best first guess for the bot with the word frequency heuristic
 #average for botNoHeuristic: 
 
