@@ -124,7 +124,7 @@ def rankBestWords(wordsLeft, N):
 
     elapsedTime = finishTime - startTime
 
-    print(f"Execution took {elapsedTime} seconds")
+    print(f"Time elapsed: {elapsedTime:.2f} seconds")
 
     return top_n
 
