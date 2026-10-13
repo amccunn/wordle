@@ -1,5 +1,6 @@
 import json
 from WordleSolver import rankBestWords
+from WordleSolverOld import rankBestWords as rankBestWordsOld
 
 with open("valid-words.csv", "r") as f:
     allWordsList = f.read().splitlines()
@@ -8,7 +9,7 @@ with open("valid-words.csv", "r") as f:
 starting_scores = rankBestWords(allWordsList, len(allWordsList))
 
 # Convert list of tuples to a dictionary for easy saving/loading
-with open("first_guess_scores.json", "w") as f:
+with open("first_guess_scores_v2.json", "w") as f:
     json.dump(dict(starting_scores), f)
 
 print("First guess scores cached successfully!")

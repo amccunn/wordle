@@ -23,7 +23,6 @@ def sigmoidShifted(x, shift=2.0, stretch=3.0):
 #finds the frequency of each word in the English language using the wordfreq library
 #squishes the frequencies into a range of 0-1 to make them easier to work with
 wordFrequencies = {word: sigmoidShifted(zipf_frequency(word, 'en')) for word in VALID_WORDS}
-print(f"Word frequencies calculated for {len(wordFrequencies)} words.")
 #test word list for testing is a subset of VALID_WORDS of 100 randomly selected words
 #evenly spaced by word frequency to ensure a good distribution of common and uncommon words
 TEST_WORDS = r.sample(VALID_WORDS, 1000)
@@ -66,7 +65,7 @@ def findWordsLeft(guessMade, wordColours, currentWordList):
 
     return newWordList
 
-def getBestWords(wordsLeft=VALID_WORDS, N=5, fullWordList=VALID_WORDS, cache_file="first_guess_scores.json"):
+def getBestWords(wordsLeft=VALID_WORDS, N=5, fullWordList=VALID_WORDS, cache_file="first_guess_scores_v2.json"):
     
     # Check if this is the first turn (all words are still available)
     if len(wordsLeft) == len(fullWordList):
@@ -105,9 +104,6 @@ def rankBestWords(wordsLeft, N):
 
             counts[colourCombo] += 1
 
-        #accounts for the frequency of each word in the info calc
-        map(lambda x: wordFrequencies[x], counts.keys())
-
         wordsDictionary[word] = {combo: count * inv_length for combo, count in counts.items()}
 
     #finds the expected info of each word by summing its possible colour combos
@@ -115,7 +111,7 @@ def rankBestWords(wordsLeft, N):
     expectedInfo = {}
     
     for word, probs in wordsDictionary.items():
-        expectedInfo[word] = sum(p * math.log2(1.0 / p) for p in probs.values())
+        expectedInfo[word] = sum(p * math.log2(1.0 / p) * wordFrequencies[word] for p in probs.values())
 
     # returns the top N words and their expected info
     top_n = nlargest(N, expectedInfo.items(), key=lambda item: item[1])

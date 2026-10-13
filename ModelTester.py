@@ -1,4 +1,4 @@
-from WordleSolverOld import wordleWord, findWordsLeft, getBestWords, VALID_WORDS
+from WordleSolver import wordleWord, findWordsLeft, getBestWords, VALID_WORDS
 
 with open("word-bank.csv", "r") as fi:
     targetWordPossibilities = fi.read().splitlines()
@@ -59,4 +59,14 @@ for word, avg in sorted(topTenWordsDict.items(), key=lambda x: x[1]):
 # reais: 3.618
 #tales is therefore the best first guess for the bot with the word frequency heuristic
 #average for botNoHeuristic: 
-
+# Top 10 first guesses and their average guesses:
+# tales: 3.552
+# tears: 3.568
+# teras: 3.573
+# tares: 3.576
+# rates: 3.591
+# nares: 3.598
+# rales: 3.599
+# lares: 3.605
+# soare: 3.613
+# reais: 3.618
