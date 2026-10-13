@@ -23,7 +23,7 @@ def sigmoidShifted(x, shift=2.0, stretch=3.0):
 #finds the frequency of each word in the English language using the wordfreq library
 #squishes the frequencies into a range of 0-1 to make them easier to work with
 wordFrequencies = {word: sigmoidShifted(zipf_frequency(word, 'en')) for word in VALID_WORDS}
-
+print(f"Word frequencies calculated for {len(wordFrequencies)} words.")
 #test word list for testing is a subset of VALID_WORDS of 100 randomly selected words
 #evenly spaced by word frequency to ensure a good distribution of common and uncommon words
 TEST_WORDS = r.sample(VALID_WORDS, 1000)

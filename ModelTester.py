@@ -1,4 +1,4 @@
-from WordleSolver import wordleWord, findWordsLeft, getBestWords, VALID_WORDS
+from WordleSolverOld import wordleWord, findWordsLeft, getBestWords, VALID_WORDS
 
 with open("word-bank.csv", "r") as fi:
     targetWordPossibilities = fi.read().splitlines()
