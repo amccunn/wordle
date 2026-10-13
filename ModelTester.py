@@ -45,18 +45,18 @@ print("\nTop 10 first guesses and their average guesses:")
 for word, avg in sorted(topTenWordsDict.items(), key=lambda x: x[1]):
     print(f"{word}: {avg:.3f}")
 
-#average for botWithWordFreqHeuristic: 3.576 - tares first guess since it has the best score
+#average for botWithWordFreqHeuristic:
 # Top 10 first guesses and their average guesses:
-# tales: 3.552
-# tears: 3.568
-# teras: 3.573
-# tares: 3.576
-# rates: 3.591
-# nares: 3.598
-# rales: 3.599
-# lares: 3.605
-# soare: 3.613
-# reais: 3.618
+# tales: 3.563
+# tears: 3.576
+# tries: 3.577
+# lanes: 3.592
+# tires: 3.593
+# rates: 3.602
+# cares: 3.610
+# roles: 3.611
+# raise: 3.614
+# dares: 3.621
 #tales is therefore the best first guess for the bot with the word frequency heuristic
 #average for botNoHeuristic: 
 # Top 10 first guesses and their average guesses:
