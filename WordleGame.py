@@ -1,12 +1,9 @@
 import random as r
 import tkinter as tk
-from WordleSolver import getBestWords, findWordsLeft, wordleWord, VALID_WORDS
+from WordleSolver import getBestWords, findWordsLeft, wordleWord, VALID_WORDS, ANSWERS
 from AutoPlayer import load_wordle
 
-# read the word bank file into a list
-# finds answer word
-with open("word-bank.csv", "r") as fi:
-    targetWordPossiblities = fi.read().splitlines()
+targetWordPossiblities = ANSWERS.copy()
 
 currentWordsList = VALID_WORDS.copy()
 

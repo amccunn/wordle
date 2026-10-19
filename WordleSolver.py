@@ -25,6 +25,9 @@ def timer(func):
 with open("valid-words.csv", "r") as f:
     VALID_WORDS = f.read().splitlines()
 
+with open("word-bank.csv", "r") as fi:
+    ANSWERS = fi.read().splitlines()
+
 #sigmoid function to squish the word frequencies into a range of 0-1
 def sigmoidShifted(x, shift=3.5, stretch=5.0):
     return 1 / (1 + np.exp(-stretch * (x - shift)))
@@ -119,11 +122,14 @@ def rankBestWords(wordsLeft, N):
     length = max(len(wordsLeft),1)
     inv_length = 1.0 / length
 
+    answersLeft = [ans for ans in wordsLeft
+                   if ans in ANSWERS]
+
     for word in wordsLeft:
 
         counts = defaultdict(int)
 
-        for secretWord in wordsLeft:
+        for secretWord in answersLeft:
 
             colourCombo = tuple(wordleWord(word, secretWord))
 
