@@ -1,7 +1,8 @@
+import json
 from WordleSolver import wordleWord, findWordsLeft, getBestWords, VALID_WORDS, timer
 
 @timer
-def tester():
+def tester(name=None):
     with open("word-bank.csv", "r") as fi:
         targetWordPossibilities = fi.read().splitlines()
 
@@ -43,11 +44,27 @@ def tester():
         wordAvgGuesses /= len(targetWordPossibilities)
         topTenWordsDict[word[0]] = wordAvgGuesses
 
+    sortedDict = {}
     print("\nTop 10 first guesses and their average guesses:")
     for word, avg in sorted(topTenWordsDict.items(), key=lambda x: x[1]):
         print(f"{word}: {avg:.3f}")
+        sortedDict[word] = avg
 
-tester()
+
+    if name != None:
+        with open(f"{name}.json", "w") as f:
+            json.dump(dict(sortedDict), f)
+
+def validate():
+    modelName = input("Name the model to be tested: ")
+    if "/" in list(modelName):
+        #add more validation as it comes up
+        print("invalid name")
+        validate()
+    else:
+        return tester(modelName)
+
+#SCORES ON OLD ALGORITHM
 #average for botWithWordFreqHeuristic: linearShifted
 # Top 10 first guesses and their average guesses:
 # least: 3.629

@@ -29,7 +29,7 @@ with open("word-bank.csv", "r") as fi:
     ANSWERS = fi.read().splitlines()
 
 #sigmoid function to squish the word frequencies into a range of 0-1
-def sigmoidShifted(x, shift=3.5, stretch=5.0):
+def sigmoidShifted(x, shift=3.0, stretch=6.0):
     return 1 / (1 + np.exp(-stretch * (x - shift)))
 
 #takes whole list of vals and squishes them into a range of 0-1 linearly
@@ -48,7 +48,7 @@ def linearCompression(val, min_val=0, max_val=7):
 
 #finds the frequency of each word in the English language using the wordfreq library
 #squishes the frequencies into a range of 0-1 to make them easier to work with
-wordFrequencies = {word: linearCompression(zipf_frequency(word, 'en')) for word in VALID_WORDS}
+wordFrequencies = {word: sigmoidShifted(zipf_frequency(word, 'en')) for word in VALID_WORDS}
 
 
 
