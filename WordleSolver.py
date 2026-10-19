@@ -17,12 +17,14 @@ with open("valid-words.csv", "r") as f:
     VALID_WORDS = f.read().splitlines()
 
 #sigmoid function to squish the word frequencies into a range of 0-1
-def sigmoidShifted(x, shift=3.0, stretch=6.0):
+def sigmoidShifted(x, shift=3.5, stretch=8.0):
     return 1 / (1 + np.exp(-stretch * (x - shift)))
+
 
 #finds the frequency of each word in the English language using the wordfreq library
 #squishes the frequencies into a range of 0-1 to make them easier to work with
 wordFrequencies = {word: sigmoidShifted(zipf_frequency(word, 'en')) for word in VALID_WORDS}
+
 #test word list for testing is a subset of VALID_WORDS of 100 randomly selected words
 #evenly spaced by word frequency to ensure a good distribution of common and uncommon words
 TEST_WORDS = r.sample(VALID_WORDS, 1000)
