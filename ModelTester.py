@@ -52,7 +52,7 @@ def tester(name=None):
 
 
     if name != None:
-        with open(f"{name}.json", "w") as f:
+        with open(f"model-scores/{name}.json", "w") as f:
             json.dump(dict(sortedDict), f)
 
 def validate():
