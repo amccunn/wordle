@@ -119,11 +119,11 @@ def rankBestWords(wordsLeft, N):
 
     wordsDictionary = {}
 
-    length = max(len(wordsLeft),1)
-    inv_length = 1.0 / length
-
     answersLeft = [ans for ans in wordsLeft
                    if ans in ANSWERS]
+
+    length = max(len(answersLeft),1)
+    inv_length = 1.0 / length
 
     for word in wordsLeft:
 
