@@ -1,51 +1,66 @@
-from WordleSolver import wordleWord, findWordsLeft, getBestWords, VALID_WORDS
+from WordleSolver import wordleWord, findWordsLeft, getBestWords, VALID_WORDS, timer
 
-with open("word-bank.csv", "r") as fi:
-    targetWordPossibilities = fi.read().splitlines()
+@timer
+def tester():
+    with open("word-bank.csv", "r") as fi:
+        targetWordPossibilities = fi.read().splitlines()
 
-wordAvgGuesses = 0
+    wordAvgGuesses = 0
 
-topTenWords = getBestWords(wordsLeft=VALID_WORDS, N=10)
-topTenWordsDict = {}
+    topTenWords = getBestWords(wordsLeft=VALID_WORDS, N=10)
+    topTenWordsDict = {}
 
-#test the top 10 best first guesses
-for word in topTenWords:
+    #test the top 10 best first guesses
+    for word in topTenWords:
 
-    #test algorithm against all the possible target words
-    for targetWord in targetWordPossibilities:
+        #test algorithm against all the possible target words
+        for targetWord in targetWordPossibilities:
 
-        nextGuess = word[0]
+            nextGuess = word[0]
 
-        wordsLeft = targetWordPossibilities.copy()
+            wordsLeft = targetWordPossibilities.copy()
 
-        for i in range(6):
+            for i in range(6):
 
-            #simulate the guess and get the colours for each letter
-            wordColourList = wordleWord(nextGuess, targetWord)
+                #simulate the guess and get the colours for each letter
+                wordColourList = wordleWord(nextGuess, targetWord)
 
-            if wordColourList == ["green"] * 5:
-                guesses = i + 1
-                break
+                if wordColourList == ["green"] * 5:
+                    guesses = i + 1
+                    break
 
-            #find the words left after the guess is made
-            wordsLeft = findWordsLeft(nextGuess, wordColourList, wordsLeft)
+                #find the words left after the guess is made
+                wordsLeft = findWordsLeft(nextGuess, wordColourList, wordsLeft)
 
-            #calculate the next best guess based on the words left
-            nextGuess = getBestWords(wordsLeft=wordsLeft, N=1)[0][0]
+                #calculate the next best guess based on the words left
+                nextGuess = getBestWords(wordsLeft=wordsLeft, N=1)[0][0]
 
-        else:
-            guesses = 6
+            else:
+                guesses = 6
 
-        wordAvgGuesses += guesses
+            wordAvgGuesses += guesses
 
-    wordAvgGuesses /= len(targetWordPossibilities)
-    topTenWordsDict[word[0]] = wordAvgGuesses
+        wordAvgGuesses /= len(targetWordPossibilities)
+        topTenWordsDict[word[0]] = wordAvgGuesses
 
-print("\nTop 10 first guesses and their average guesses:")
-for word, avg in sorted(topTenWordsDict.items(), key=lambda x: x[1]):
-    print(f"{word}: {avg:.3f}")
+    print("\nTop 10 first guesses and their average guesses:")
+    for word, avg in sorted(topTenWordsDict.items(), key=lambda x: x[1]):
+        print(f"{word}: {avg:.3f}")
 
-#average for botWithWordFreqHeuristic:
+tester()
+#average for botWithWordFreqHeuristic: linearShifted
+# Top 10 first guesses and their average guesses:
+# least: 3.629
+# later: 3.683
+# great: 3.698
+# since: 3.713
+# after: 3.738
+# their: 3.740
+# means: 3.742
+# times: 3.752
+# those: 3.759
+# years: 3.819
+#average for botWithWordFreqHeuristic: sigmoidShifted
 # Top 10 first guesses and their average guesses:
 # tales: 3.563
 # tears: 3.576

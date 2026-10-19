@@ -13,21 +13,45 @@ colours = ['green', 'yellow', 'grey']
 
 possibleColourCombos = list(itertools.product(colours, repeat=5))
 
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start = t.time()
+        result = func(*args, **kwargs)
+        end = t.time()
+        print(f"{func.__name__} took {end - start}s")
+        return result
+    return wrapper
+
 with open("valid-words.csv", "r") as f:
     VALID_WORDS = f.read().splitlines()
 
 #sigmoid function to squish the word frequencies into a range of 0-1
-def sigmoidShifted(x, shift=3.5, stretch=8.0):
+def sigmoidShifted(x, shift=3.5, stretch=5.0):
     return 1 / (1 + np.exp(-stretch * (x - shift)))
+
+#takes whole list of vals and squishes them into a range of 0-1 linearly
+def linearCompression(val, min_val=0, max_val=7):
+
+    if min_val is None:
+        min_val = val
+    if max_val is None:
+        max_val = val
+
+    squished_val = val / (max_val - min_val) if (max_val - min_val) != 0 else val
+
+    #returns val is failed to squish, otherwise returns squished val
+    return squished_val
 
 
 #finds the frequency of each word in the English language using the wordfreq library
 #squishes the frequencies into a range of 0-1 to make them easier to work with
-wordFrequencies = {word: sigmoidShifted(zipf_frequency(word, 'en')) for word in VALID_WORDS}
+wordFrequencies = {word: linearCompression(zipf_frequency(word, 'en')) for word in VALID_WORDS}
+
+
 
 #test word list for testing is a subset of VALID_WORDS of 100 randomly selected words
 #evenly spaced by word frequency to ensure a good distribution of common and uncommon words
-TEST_WORDS = r.sample(VALID_WORDS, 1000)
+TEST_WORDS = r.sample(VALID_WORDS, 100)
 
 #use input word and target word to return a list of colours
 def wordleWord(word, targetWord):
@@ -67,6 +91,7 @@ def findWordsLeft(guessMade, wordColours, currentWordList):
 
     return newWordList
 
+@timer
 def getBestWords(wordsLeft=VALID_WORDS, N=5, fullWordList=VALID_WORDS, cache_file="first_guess_scores_v2.json"):
     
     # Check if this is the first turn (all words are still available)
@@ -88,8 +113,6 @@ def getBestWords(wordsLeft=VALID_WORDS, N=5, fullWordList=VALID_WORDS, cache_fil
 
 
 def rankBestWords(wordsLeft, N):
-
-    #startTime = t.time()
 
     wordsDictionary = {}
 
@@ -117,12 +140,6 @@ def rankBestWords(wordsLeft, N):
 
     # returns the top N words and their expected info
     top_n = nlargest(N, expectedInfo.items(), key=lambda item: item[1])
-
-    #finishTime = t.time()
-
-    #elapsedTime = finishTime - startTime
-
-    #print(f"Time elapsed: {elapsedTime:.2f} seconds")
 
     return top_n
 
